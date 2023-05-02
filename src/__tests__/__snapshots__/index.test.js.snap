@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`all feature 1`] = `
+"console.log('before code');
+import a from "depA";
+import b from "depB";
+import _amdDep from "depC";
+import _amdDep2 from "depD";
+import("depE");
+const {
+  c1,
+  c2,
+  c3: c3x,
+  c4: {
+    cc4: {
+      ccc4
+    }
+  }
+} = _amdDep;
+const {
+  d1
+} = _amdDep2;
+// inner code
+console.log('inner code start');
+export default {
+  property: 'property',
+  name: 123
+};
+console.log('inner code end');
+console.log('after code');"
+`;
+
+exports[`arrow function 1`] = `
+"import a from "a";
+export default {
+  name: 'module-arrow-function'
+};"
+`;
+
+exports[`no dependencies one param 1`] = `
+"export default {
+  name: 'module-no-dependencies-one-param'
+};"
+`;
+
+exports[`no dependencies two params 1`] = `
+"export default {
+  name: 'module-no-dependencies-two-params'
+};"
+`;

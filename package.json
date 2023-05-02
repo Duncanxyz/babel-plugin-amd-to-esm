@@ -1,0 +1,43 @@
+{
+  "name": "babel-plugin-amd-to-esm",
+  "version": "1.0.0",
+  "description": "A Babel plugin that converts AMD modules to ES modules",
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "!__tests__"
+  ],
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix"
+    ]
+  },
+  "keywords": [
+    "babel",
+    "amd",
+    "esm",
+    "es6",
+    "modules"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Duncanxyz/babel-plugin-amd-to-esm.git"
+  },
+  "homepage": "https://github.com/Duncanxyz/babel-plugin-amd-to-esm",
+  "author": "cyx",
+  "license": "MIT",
+  "type": "commonjs",
+  "devDependencies": {
+    "@babel/core": "^7.21.5",
+    "eslint": "^8.39.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.3",
+    "jest": "^29.5.0",
+    "lint-staged": "^13.2.2",
+    "prettier": "^2.8.8"
+  },
+  "scripts": {
+    "test": "jest",
+    "prepare": "husky install"
+  }
+}
