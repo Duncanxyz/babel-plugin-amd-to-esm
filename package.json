@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-amd-to-esm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Babel plugin that converts AMD modules to ES modules",
   "main": "src/index.js",
   "files": [
