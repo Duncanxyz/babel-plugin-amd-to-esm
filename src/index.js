@@ -1,11 +1,37 @@
+const fs = require('fs');
+const path = require('path');
+
+let handleESMDependencies = false;
+
+const fileRecords = {
+  isInit: false,
+  init({ rootDir, alias }) {
+    fileRecords.rootDir = rootDir || process.cwd();
+    fileRecords.alias = alias || {};
+    fileRecords.isInit = true;
+  },
+  data: new Map(),
+  rootDir: '',
+  alias: {},
+};
+
 module.exports = function (babel) {
-  const { types: t } = babel;
+  const { types: t, parseSync } = babel;
 
   return {
     name: 'amd-to-esm',
     visitor: {
-      Program(path, state) {
-        const body = path.get('body');
+      Program(programPath, state) {
+        handleESMDependencies = state.opts.handleESMDependencies || false;
+
+        if (handleESMDependencies && !fileRecords.isInit) {
+          fileRecords.init({
+            rootDir: state.opts.rootDir,
+            alias: state.opts.alias,
+          });
+        }
+
+        const body = programPath.get('body');
         const defineNodePath = body.find(
           (item) =>
             t.isExpressionStatement(item) &&
@@ -43,18 +69,36 @@ module.exports = function (babel) {
           });
           const uniqueDeclarations = [];
           const factoryParams = factory.node.params.map((item, index) => {
+            let fileType;
+            handleESMDependencies &&
+              (fileType = getFileType(
+                resolvePath(state.filename, depsPath[index]),
+                parseSync
+              ));
+
             if (t.isObjectPattern(item)) {
-              if (
-                item.properties.some(
-                  (property) => property.key.name == 'default'
-                )
-              ) {
-                if (item.properties.length > 1) {
-                  throw new Error(
-                    `Currently does not support mixing default and other destructuring, such as: define(['dependA'], function({default: A, AProperty1}) {}) (${state.filename})`
-                  );
+              if (handleESMDependencies && fileType === 'esm') {
+                if (
+                  item.properties.length == 1 &&
+                  item.properties[0].key.name === 'default'
+                ) {
+                  return [
+                    t.importDefaultSpecifier(
+                      t.identifier(item.properties[0].value.name)
+                    ),
+                  ];
                 }
-                return t.identifier(item.properties[0].value.name);
+
+                return item.properties.map((property) => {
+                  if (property.key.name === property.key.value) {
+                    return t.ImportSpecifier(t.identifier(property.key.name));
+                  }
+
+                  return t.importSpecifier(
+                    t.identifier(property.value.name),
+                    t.identifier(property.key.name)
+                  );
+                });
               } else {
                 // Destructuring
                 const identifier = defineNodePath.scope.generateUidIdentifier(
@@ -68,10 +112,14 @@ module.exports = function (babel) {
                     ),
                   ])
                 );
-                return identifier;
+                return [t.importDefaultSpecifier(identifier)];
               }
             } else {
-              return t.identifier(item.name);
+              if (handleESMDependencies && fileType === 'esm') {
+                return [t.importNamespaceSpecifier(t.identifier(item.name))];
+              }
+
+              return [t.importDefaultSpecifier(t.identifier(item.name))];
             }
           });
           const importDeclarations = depsPath.map((depPath, index) => {
@@ -82,8 +130,9 @@ module.exports = function (babel) {
                 ])
               );
             }
+
             return t.importDeclaration(
-              [t.importDefaultSpecifier(factoryParams[index])],
+              factoryParams[index],
               t.stringLiteral(depPath)
             );
           });
@@ -138,3 +187,80 @@ module.exports = function (babel) {
     },
   };
 };
+
+function getFileType(targetPath, parseSync) {
+  if (fileRecords.data.has(targetPath)) {
+    return fileRecords.data.get(targetPath);
+  }
+
+  // only .js/.vue/.jsx are considered.
+  if (!/\.((js)|(vue)|(jsx))$/.test(targetPath)) {
+    if (fs.existsSync(`${targetPath}.vue`)) {
+      targetPath = `${targetPath}.vue`;
+    } else if (fs.existsSync(`${targetPath}.jsx`)) {
+      targetPath = `${targetPath}.jsx`;
+    } else {
+      targetPath = `${targetPath}.js`;
+    }
+  }
+
+  let fileType;
+  if (/\.((vue)|(jsx))$/.test(targetPath)) {
+    fileType = 'esm';
+  } else if (/\.js$/.test(targetPath) && fs.existsSync(targetPath)) {
+    const content = fs.readFileSync(targetPath, 'utf-8');
+
+    const ast = parseSync(content);
+
+    if (
+      ast.program.body.some((item) =>
+        [
+          'ImportDeclaration',
+          'ExportNamedDeclaration',
+          'ExportDefaultDeclaration',
+        ].includes(item.type)
+      )
+    ) {
+      fileType = 'esm';
+    } else if (
+      ast.program.body.some((item) => {
+        return (
+          item.type === 'ExpressionStatement' &&
+          item.expression &&
+          item.expression.type === 'CallExpression' &&
+          item.expression.callee &&
+          item.expression.callee.name === 'define'
+        );
+      })
+    ) {
+      fileType = 'amd';
+    } else {
+      fileType = -1;
+    }
+  } else {
+    fileType = -1;
+  }
+
+  fileRecords.data.set(targetPath, fileType);
+
+  return fileType;
+}
+
+function resolvePath(sourcePath, targetPath) {
+  if (/^\.\//.test(targetPath)) {
+    return path.resolve(sourcePath.replace(/(\/|\\)[^\/\\]*$/, ''), targetPath);
+  }
+
+  const aliasKeys = Object.keys(fileRecords.alias);
+  if (aliasKeys.length) {
+    const aliasKey = aliasKeys.find((item) => targetPath.startsWith(item));
+    if (aliasKey) {
+      return targetPath.replace(
+        new RegExp(`^${aliasKey}`),
+        fileRecords.alias[aliasKey]
+      );
+    }
+  }
+
+  return path.resolve(fileRecords.rootDir, targetPath);
+}

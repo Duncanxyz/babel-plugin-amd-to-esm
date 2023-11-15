@@ -1,5 +1,5 @@
 const babel = require('@babel/core');
-const plugin = require('../index.js');
+const plugin = require('../../index.js');
 
 const fs = require('fs');
 const path = require('path');
@@ -14,8 +14,8 @@ function makeTest(name) {
   expect(code).toMatchSnapshot();
 }
 
-it('all feature', () => {
-  makeTest('all-feature');
+it('all basis feature', () => {
+  makeTest('all-basis-feature');
 });
 
 it('no dependencies two params', () => {

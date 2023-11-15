@@ -1,12 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`all feature 1`] = `
+exports[`all basis feature 1`] = `
 "console.log('before code');
 import a from "depA";
-import b from "depB";
-import _amdDep from "depC";
-import _amdDep2 from "depD";
+import _amdDep from "depB";
+import _amdDep2 from "depC";
+import _amdDep3 from "depD";
 import("depE");
+const {
+  default: b
+} = _amdDep;
 const {
   c1,
   c2,
@@ -16,10 +19,10 @@ const {
       ccc4
     }
   }
-} = _amdDep;
+} = _amdDep2;
 const {
   d1
-} = _amdDep2;
+} = _amdDep3;
 // inner code
 console.log('inner code start');
 export default {
