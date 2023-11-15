@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`all feature 1`] = `
+exports[`all basis feature 1`] = `
 "console.log('before code');
 import a from "depA";
 import b from "depB";
