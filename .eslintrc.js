@@ -3,6 +3,9 @@ module.exports = {
     node: true,
     es6: true,
   },
+  parserOptions: {
+    sourceType: 'module',
+  },
   plugins: ['prettier'],
   rules: {
     'prettier/prettier': ['error'],
