@@ -32,7 +32,8 @@ it('handle esm', () => {
       ],
     ],
   });
-  expect(code).toMatchSnapshot();
 
   mock.restore();
+
+  expect(code).toMatchSnapshot();
 });
