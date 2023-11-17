@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "files": [
     "src",
-    "!__tests__"
+    "!**/__tests__"
   ],
   "lint-staged": {
     "*.js": [
