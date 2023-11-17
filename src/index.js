@@ -247,7 +247,7 @@ function getFileType(targetPath, parseSync) {
 }
 
 function resolvePath(sourcePath, targetPath) {
-  if (/^\.\//.test(targetPath)) {
+  if (/^\.{1,2}\//.test(targetPath)) {
     return path.resolve(sourcePath.replace(/(\/|\\)[^\/\\]*$/, ''), targetPath);
   }
 
