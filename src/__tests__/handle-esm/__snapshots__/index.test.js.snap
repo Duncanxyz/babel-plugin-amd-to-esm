@@ -1,11 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`handle esm 1`] = `
-"import _amdDep from "amd-b.js";
-import { esmA1, default as esmDefault, esmA2 as esmAA2 } from "esm-a.js";
+"import _amdDep from "../amd-b.js";
+import { esmA1, default as esmDefault, esmA2 as esmAA2 } from "../esm-a.js";
 import * as esmB from "@/esm-b";
+import VueComponent from "./VueComponent";
+import ReactComponent from "../ReactComponent";
 const {
-  amdB1
+  amdB1,
+  default: amdB2
 } = _amdDep;
 export default {
   name: 'amd-a'

@@ -14,11 +14,11 @@ it('handle esm', () => {
   const rootDir = path.resolve('./code');
 
   const originCode = fs.readFileSync(
-    path.resolve(rootDir, './amd-a.js'),
+    path.resolve(rootDir, './wrapper/amd-a.js'),
     'utf8'
   );
   const { code } = babel.transform(originCode, {
-    filename: path.resolve(rootDir, './amd-a.js'),
+    filename: path.resolve(rootDir, './wrapper/amd-a.js'),
     plugins: [
       [
         plugin,

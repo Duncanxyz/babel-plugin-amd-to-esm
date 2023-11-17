@@ -197,10 +197,18 @@ module.exports = {
 - source code
 
 ```javascript
-define(['amd-b.js', 'esm-a.js', '@/esm-b'], function (
-  { amdB1 },
+define([
+  '../amd-b.js',
+  '../esm-a.js',
+  '@/esm-b',
+  './VueComponent',
+  '../ReactComponent',
+], function (
+  { amdB1, default: amdB2 },
   { esmA1, default: esmDefault, esmA2: esmAA2 },
-  esmB
+  esmB,
+  { default: VueComponent },
+  { default: ReactComponent }
 ) {
   return {
     name: 'amd-a',
@@ -211,10 +219,12 @@ define(['amd-b.js', 'esm-a.js', '@/esm-b'], function (
 - converted code
 
 ```javascript
-import _amdDep from 'amd-b.js';
-import { esmA1, default as esmDefault, esmA2 as esmAA2 } from 'esm-a.js';
+import _amdDep from '../amd-b.js';
+import { esmA1, default as esmDefault, esmA2 as esmAA2 } from '../esm-a.js';
 import * as esmB from '@/esm-b';
-const { amdB1 } = _amdDep;
+import VueComponent from './VueComponent';
+import ReactComponent from '../ReactComponent';
+const { amdB1, default: amdB2 } = _amdDep;
 export default {
   name: 'amd-a',
 };
