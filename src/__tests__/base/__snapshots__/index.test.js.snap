@@ -6,7 +6,7 @@ import a from "depA";
 import _amdDep from "depB";
 import _amdDep2 from "depC";
 import _amdDep3 from "depD";
-import("depE");
+import "depE";
 const {
   default: b
 } = _amdDep;

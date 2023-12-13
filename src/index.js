@@ -124,11 +124,7 @@ module.exports = function (babel) {
           });
           const importDeclarations = depsPath.map((depPath, index) => {
             if (!factoryParams[index]) {
-              return t.expressionStatement(
-                t.callExpression(t.identifier('import'), [
-                  t.stringLiteral(depPath),
-                ])
-              );
+              return t.importDeclaration([], t.stringLiteral(depPath));
             }
 
             return t.importDeclaration(
