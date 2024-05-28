@@ -84,10 +84,11 @@ console.log('after code');
 ```javascript
 console.log('before code');
 import a from 'depA';
-import b from 'depB';
-import _amdDep from 'depC';
-import _amdDep2 from 'depD';
-import('depE');
+import _amdDep from 'depB';
+import _amdDep2 from 'depC';
+import _amdDep3 from 'depD';
+import 'depE';
+const { default: b } = _amdDep;
 const {
   c1,
   c2,
@@ -95,8 +96,8 @@ const {
   c4: {
     cc4: { ccc4 },
   },
-} = _amdDep;
-const { d1 } = _amdDep2;
+} = _amdDep2;
+const { d1 } = _amdDep3;
 // inner code
 console.log('inner code start');
 export default {
